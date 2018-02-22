@@ -4,12 +4,13 @@ import seaborn
 import pandas as pd
 import os
 import prob2utils as model_1
+import prob2utils_withbias as model_2
 from basic_viz import load_data
 
 # Tasks:
 #  - implement the 3 models 
 #    (a) baseline from set 5 [DONE]
-#    (b) baseline with bias terms
+#    (b) baseline with bias terms [DONE]
 #    (c) off-the-shelf
 #  - optimize parameters for first 2 models, with k = 20 fixed
 #  - compare each models performance on the test set
@@ -73,14 +74,15 @@ if __name__ == "__main__":
     Y_train = np.loadtxt('data/train.txt').astype(int)
     Y_test = np.loadtxt('data/test.txt').astype(int)
     
-    # Train model 1: baseline model from set 5
     M = max(max(Y_train[:,0]), max(Y_test[:,0])).astype(int) # users
     N = max(max(Y_train[:,1]), max(Y_test[:,1])).astype(int) # movies
     
+    # Train model 1: baseline model from set 5
     k = 20
     # TODO: optimize these parameters, as well as 'eps'
     reg = 0.1
     eta = 0.03 # learning rate
+    # eps = ?
     
     print("Training model 1 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
     U_1, V_1, e_in_1 = model_1.train_model(M, N, k, eta, reg, Y_train)
@@ -94,9 +96,31 @@ if __name__ == "__main__":
     visualize(
         V_proj_1, 
         [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Ten Selected Movies'
+        'Model 1: Ten Selected Movies'
     )
     
-    # TODO: models 2 and 3
+    # Train model 2: baseline model with bias terms
+    k = 20
+    # TODO: optimize these parameters, as well as 'eps'
+    reg = 0.1
+    eta = 0.03 # learning rate
+    # eps = ?
+    
+    print("Training model 2 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
+    U_2, V_2, a_2, b_2, e_in_2 = model_2.train_model(M, N, k, eta, reg, Y_train)
+    e_out_2 = model_2.get_err(U_2, V_2, a_2, b_2, Y_test)
+    print("model 2 results: e_in = %.3f, e_out = %.3f" % (e_in_2, e_out_2))
+    
+    # Transform model 2 to 2D
+    U_proj_2, V_proj_2 = project_to_2D(U_2, V_2)
+    
+    # Plot model 2
+    visualize(
+        V_proj_2, 
+        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
+        'Model 2: Ten Selected Movies'
+    )
+    
+    # TODO: models 3
     
     
