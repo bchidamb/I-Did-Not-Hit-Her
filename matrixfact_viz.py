@@ -84,7 +84,7 @@ if __name__ == "__main__":
     reg = 0.1
     eta = 0.03 # learning rate
     # eps = ?
-    '''
+    
     print("Training model 1 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
     U_1, V_1, e_in_1 = model_1.train_model(M, N, k, eta, reg, Y_train)
     e_out_1 = model_1.get_err(U_1, V_1, Y_test)
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
         'Model 2: Ten Selected Movies'
     )
-    '''
+    
     # TODO: get error out
     print("Training model 3 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
 
