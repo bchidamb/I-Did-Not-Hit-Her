@@ -64,7 +64,7 @@ if __name__ == "__main__":
     movies['avg_rating'] = 0
 
     # plot histogram for all ratings
-    plot_histogram(data['rating'], 'All Ratings')
+    #plot_histogram(data['rating'], 'All Ratings')
 
     # build data for most popular and highest rating
     for i in range(1, 1682+1):
@@ -79,7 +79,6 @@ if __name__ == "__main__":
         movies.loc[movies['movie_id'] == i, 'num_ratings']= ri_num
         movies.loc[movies['movie_id'] == i, 'avg_rating']= ri_avg
 
-    print("got here")
 
     # Plot most popular (highest number) ratings
     movies.sort_values('num_ratings', inplace=True, ascending=False)
@@ -104,7 +103,19 @@ if __name__ == "__main__":
 
     total_high_ratings = pd.Series(np.array(total_high_ratings))
 
-    plot_histogram(total_high_ratings, 'Highest Rated', filename='4_3',save=True)
+    #plot_histogram(total_high_ratings, 'Highest Rated', filename='4_3',save=True)
+
+    # Plot all ratings of movies from three genres of your choice
+    # Now sort ratings by the three genres chosen
+    genres = ['action']# 'horror', 'childrens']
+    for genre in genres:
+        g_ids = movies.loc[movies[genre] == 1, 'movie_id'].values
+        total_g_ratings = []
+        for g_id in g_ids:
+            g_ratings = data.loc[data['movie_id'] == g_id, 'rating'].values
+            total_g_ratings.append(g_ratings)
+        total_g_ratings = pd.Series(np.array(total_g_ratings))
+        plot_histogram(total_g_ratings, genre + ' ratings', filename='4_4_' + genre,save=True)
 
     # Example for saving plot:
     # plot_histogram(data['rating'], 'All Ratings', filename='4_1', save=True)
