@@ -5,6 +5,7 @@ import pandas as pd
 import os
 import prob2utils as model_1
 import prob2utils_withbias as model_2
+import surpriseimpl1 as model_3
 from basic_viz import load_data
 
 # Tasks:
@@ -104,7 +105,7 @@ if __name__ == "__main__":
     # TODO: optimize these parameters, as well as 'eps'
     reg = 0.1
     eta = 0.03 # learning rate
-    # eps = ?
+   # eps = ?
     
     print("Training model 2 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
     U_2, V_2, a_2, b_2, e_in_2 = model_2.train_model(M, N, k, eta, reg, Y_train)
@@ -122,5 +123,20 @@ if __name__ == "__main__":
     )
     
     # TODO: models 3
+
+    print("Training model 3 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
+
+    U_3, V_3, a_3, b_3, e_in_3 = model_3.train_model('./data/train.txt', '.data/test.txt', k, eta, reg, Y_train)
+
+    e_out_3 = -1
+    print("model 3 results: e_in = %.3f, e_out = %.3f" % (e_in_3, e_out_3))
     
+    # Transform model 3 to 2D
+    U_proj_3, V_proj_3 = project_to_2D(U_3, V_3)
     
+    # Plot model 3
+    visualize(
+        V_proj_3, 
+        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
+        'Model 2: Ten Selected Movies'
+    )

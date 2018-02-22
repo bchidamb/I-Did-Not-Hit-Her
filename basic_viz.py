@@ -64,7 +64,7 @@ if __name__ == "__main__":
     movies['avg_rating'] = 0
 
     # plot histogram for all ratings
-    #plot_histogram(data['rating'], 'All Ratings')
+    plot_histogram(data['rating'], 'All Ratings')
 
     # build data for most popular and highest rating
     for i in range(1, 1682+1):

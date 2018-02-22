@@ -79,8 +79,8 @@ def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=2):
     # randomly initialize U, V, a, and b
     U = np.matrix(np.random.uniform(-0.5, 0.5, (M, K)))
     V = np.matrix(np.random.uniform(-0.5, 0.5, (N, K)))
-    a = np.random.uniform(-0.5, 0.5, (M,))
-    b = np.random.uniform(-0.5, 0.5, (N,))
+    a = np.random.uniform(-0.5, 0.5, (M,)) # bias for the user
+    b = np.random.uniform(-0.5, 0.5, (N,)) # bias for the movie
     err_0 = get_err(U, V, a, b, Y)
     
     # train for at most 300 epochs
