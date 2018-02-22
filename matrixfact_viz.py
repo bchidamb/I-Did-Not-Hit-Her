@@ -67,7 +67,7 @@ def visualize(V_proj, movies_to_plot, dscr, filename=None, save=False):
     if save:
         plt.savefig(os.path.join('plots', filename + '.png'))
     else:
-        plt.show()
+        plt.show(block=False)
     
 
 if __name__ == "__main__":
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     reg = 0.1
     eta = 0.03 # learning rate
     # eps = ?
-    
+    '''
     print("Training model 1 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
     U_1, V_1, e_in_1 = model_1.train_model(M, N, k, eta, reg, Y_train)
     e_out_1 = model_1.get_err(U_1, V_1, Y_test)
@@ -121,14 +121,15 @@ if __name__ == "__main__":
         [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
         'Model 2: Ten Selected Movies'
     )
-    
-    # TODO: models 3
-
+    '''
+    # TODO: get error out
     print("Training model 3 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
 
-    U_3, V_3, a_3, b_3, e_in_3 = model_3.train_model('./data/train.txt', '.data/test.txt', k, eta, reg, Y_train)
+    # Note that surprise needs to be passed the data paths since it wants to use the data in
+    # a certain way. Can update later to pass in the raw pandas dataframes, this works though
+    U_3, V_3, a_3, b_3, e_in_3, e_out_3 = model_3.train_model('./data/train.txt', '.data/test.txt', k, eta, reg, Y_train)
 
-    e_out_3 = -1
+    #e_out_3 = -1
     print("model 3 results: e_in = %.3f, e_out = %.3f" % (e_in_3, e_out_3))
     
     # Transform model 3 to 2D
@@ -138,5 +139,18 @@ if __name__ == "__main__":
     visualize(
         V_proj_3, 
         [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Model 2: Ten Selected Movies'
+        'Model 3: Ten Selected Movies'
     )
+
+    # add needing an input at the end so program doesn't close so fast
+    input('please end me')
+
+    
+
+
+
+
+
+
+
+
