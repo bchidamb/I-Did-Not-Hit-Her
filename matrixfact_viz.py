@@ -6,6 +6,7 @@ import os
 import prob2utils as model_1
 import prob2utils_withbias as model_2
 import surpriseimpl1 as model_3
+import scipySVD as model_4
 from basic_viz import load_data
 
 # Tasks:
@@ -67,7 +68,7 @@ def visualize(V_proj, movies_to_plot, dscr, filename=None, save=False):
     if save:
         plt.savefig(os.path.join('plots', filename + '.png'))
     else:
-        plt.show(block=False)
+        plt.show()
     
 
 if __name__ == "__main__":
@@ -78,6 +79,8 @@ if __name__ == "__main__":
     M = max(max(Y_train[:,0]), max(Y_test[:,0])).astype(int) # users
     N = max(max(Y_train[:,1]), max(Y_test[:,1])).astype(int) # movies
     
+    print('M', M, 'N', N)
+
     # Train model 1: baseline model from set 5
     k = 20
     # TODO: optimize these parameters, as well as 'eps'
@@ -85,42 +88,60 @@ if __name__ == "__main__":
     eta = 0.03 # learning rate
     # eps = ?
     
-    print("Training model 1 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
-    U_1, V_1, e_in_1 = model_1.train_model(M, N, k, eta, reg, Y_train)
-    e_out_1 = model_1.get_err(U_1, V_1, Y_test)
-    print("model 1 results: e_in = %.3f, e_out = %.3f" % (e_in_1, e_out_1))
+#    print("Training model 1 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
+#    U_1, V_1, e_in_1 = model_1.train_model(M, N, k, eta, reg, Y_train)
+#    e_out_1 = model_1.get_err(U_1, V_1, Y_test)
+#    print("model 1 results: e_in = %.3f, e_out = %.3f" % (e_in_1, e_out_1))
+#    
+#    # Transform model 1 to 2D
+#    U_proj_1, V_proj_1 = project_to_2D(U_1, V_1)
+#    
+#    # Plot model 1
+#    visualize(
+#        V_proj_1, 
+#        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
+#        'Model 1: Ten Selected Movies'
+#    )
+#    
+#    # Train model 2: baseline model with bias terms
+#    k = 20
+#    # TODO: optimize these parameters, as well as 'eps'
+#    reg = 0.1
+#    eta = 0.03 # learning rate
+#   # eps = ?
+#    
+#    print("Training model 2 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
+#    U_2, V_2, a_2, b_2, e_in_2 = model_2.train_model(M, N, k, eta, reg, Y_train)
+#    e_out_2 = model_2.get_err(U_2, V_2, a_2, b_2, Y_test)
+#    print("model 2 results: e_in = %.3f, e_out = %.3f" % (e_in_2, e_out_2))
+#    
+#    # Transform model 2 to 2D
+#    U_proj_2, V_proj_2 = project_to_2D(U_2, V_2)
+#    
+#    # Plot model 2
+#    visualize(
+#        V_proj_2, 
+#        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
+#        'Model 2: Ten Selected Movies'
+#    )
     
-    # Transform model 1 to 2D
-    U_proj_1, V_proj_1 = project_to_2D(U_1, V_1)
+    # Train model 4: Scipy SVD model
+
+#    U_4, V_4, e_in_4 = model_4.train_model(M, N, k, eta, reg, Y_train)
+#    e_out_4 = model_4.get_err(U_4, V_4, Y_test)
+#
+#    print("model 4 results: e_in = %.3f, e_out = %.3f" % (e_in_4, e_out_4))
+#    
+#    # Transform model 4 to 2D
+#    U_proj_4, V_proj_4 = project_to_2D(U_4, V_4)
+#    
+#    # Plot model 4
+#    visualize(
+#        V_proj_4, 
+#        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
+#        'Model 4: Ten Selected Movies'
+#    )
     
-    # Plot model 1
-    visualize(
-        V_proj_1, 
-        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Model 1: Ten Selected Movies'
-    )
-    
-    # Train model 2: baseline model with bias terms
-    k = 20
-    # TODO: optimize these parameters, as well as 'eps'
-    reg = 0.1
-    eta = 0.03 # learning rate
-   # eps = ?
-    
-    print("Training model 2 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
-    U_2, V_2, a_2, b_2, e_in_2 = model_2.train_model(M, N, k, eta, reg, Y_train)
-    e_out_2 = model_2.get_err(U_2, V_2, a_2, b_2, Y_test)
-    print("model 2 results: e_in = %.3f, e_out = %.3f" % (e_in_2, e_out_2))
-    
-    # Transform model 2 to 2D
-    U_proj_2, V_proj_2 = project_to_2D(U_2, V_2)
-    
-    # Plot model 2
-    visualize(
-        V_proj_2, 
-        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Model 2: Ten Selected Movies'
-    )
     
     # TODO: get error out
     print("Training model 3 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
@@ -135,21 +156,16 @@ if __name__ == "__main__":
     # Transform model 3 to 2D
     U_proj_3, V_proj_3 = project_to_2D(U_3, V_3)
     
-    # Plot model 3
-    visualize(
-        V_proj_3, 
-        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Model 3: Ten Selected Movies'
-    )
+    # Plot model 2
+    for ids, category in to_plot:
+        visualize(V_proj_3, ids, 'Model 3: ' + category)
 
     # add needing an input at the end so program doesn't close so fast
     input('please end me')
-
-    
-
-
-
-
+ 
+    # add needing an input at the end so program doesn't close so fast
+    input('please end me')
+    print('goodbye!')
 
 
 

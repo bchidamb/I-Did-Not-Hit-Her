@@ -4,9 +4,26 @@ from surprise import Reader
 from surprise import accuracy
 from surprise.model_selection import train_test_split
 from surprise.model_selection import cross_validate
+from surprise.model_selection import PredefinedKFold
+from surprise.model_selection import KFold
 from basic_viz import load_data
 import numpy as np
 import os
+
+def get_err(U, V, a, b, Y, reg=0.0):
+    """
+    Takes as input a matrix Y of triples (i, j, Y_ij) where i is the index of a user,
+    j is the index of a movie, and Y_ij is user i's rating of movie j and
+    user/movie matrices U and V.
+
+    Returns the mean regularized squared-error of predictions made by
+    estimating Y_{ij} as the dot product of the ith row of U and the jth column of V^T.
+    """
+    
+    reg_term = 0.5 * reg * (np.sum(np.array(U) ** 2) + np.sum(np.array(V) ** 2))
+    err_term = 0.5 * np.sum((Yij - np.asscalar(U[i-1] * V.T[:, j-1]) - a[i-1] - b[j-1]) ** 2 
+        for i, j, Yij in Y)
+    return (reg_term + err_term) / len(Y)
 
 
 # Train the reccomender model using Suprise's SVD and return the matrices 
@@ -14,14 +31,14 @@ import os
 def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train):
 
     # Get the training data from the file
-    file_pathTrain = os.path.expanduser(trainFilePath)  #'./data/train.txt')
+    file_pathTrain = os.path.expanduser('./data/trainTest1.txt')
     reader = Reader(sep='\t')
-    dataLocalTrain = Dataset.load_from_file(file_pathTrain, reader=reader)
+    dataLocal = Dataset.load_from_file(file_pathTrain, reader=reader)
     
     # Get the testing data from the file
-    file_pathTest = os.path.expanduser(testFilePath) #'./data/train.txt')
-    reader = Reader(sep='\t')
-    dataLocalTest = Dataset.load_from_file(file_pathTrain, reader=reader)
+#    file_pathTest = os.path.expanduser(testFilePath) #'./data/train.txt')
+#    reader = Reader(sep='\t')
+#    dataLocalTest = Dataset.load_from_file(file_pathTrain, reader=reader)
     
     alg = SVD() # using the SVD algorithm
     
@@ -30,24 +47,46 @@ def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train):
     alg.lr_all = eta # set the learning rate
     alg.reg_all = reg # the reglarization constant
 
+    # define a cross-validation iterator 
+    kf = KFold(n_splits=5)
 
-    trainset = dataLocalTrain.build_full_trainset()
-    alg.fit(trainset)
-    print('number of users:', trainset.n_users)
-    print('number of movies:', trainset.n_items)
-    print('number of ratings:', trainset.n_ratings)
+    for trainset, testset in kf.split(dataLocal):
+        # train and test algorithm
+        alg.fit(trainset)
+        predictions = alg.test(testset)
 
-    testset = trainset.build_testset()
-    predictionsTrain = alg.test(testset) # testing on data in
-    errorTrain = accuracy.rmse(predictionsTrain, verbose=True)
+
+    #trainset = dataLocalTrain.build_full_trainset()
+    #alg.fit(trainset)
+    #print('number of users:', trainset.n_users)
+    #print('number of movies:', trainset.n_items)
+    #print('number of ratings:', trainset.n_ratings)
+
+    #testset = trainset.build_testset()
+    #predictionsTrain = alg.test(testset) # testing on data in
+    #errorTrain = accuracy.rmse(predictionsTrain, verbose=True)
+    
+    print('U matrix', type(alg.pu))
+    print('V matrix', type(alg.qi))
+    print('bu array', type(alg.bu))
+    print('bi array', type(alg.bi))
+
+    U = np.asmatrix(alg.pu)
+    V = np.asmatrix(alg.qi)
+    
+    print('U shape', U.shape)
+    print('V shape', V.shape)
+    
+    errorTrain = get_err(U, V, alg.bu, alg.bi, Y_train, reg)
+    errorTest = -1
 
     # to make a test test for the testing data, we need to go through a convoluted
     # process of making it first a .build_full_trainset() -> .build_testset()
-    trainsetForTest = dataLocalTrain.build_full_trainset()
-    testsetForTest = trainsetForTest.build_testset()
+    #trainsetForTest = dataLocalTrain.build_full_trainset()
+    #testsetForTest = trainsetForTest.build_testset()
     #testsetForTest = dataLocalTrain.build_testset()
-    predictionsTest = alg.test(testsetForTest)
-    errorTest = accuracy.rmse(predictionsTest, verbose=True)
+    #predictionsTest = alg.test(testsetForTest)
+    #errorTest = accuracy.rmse(predictionsTest, verbose=True)
 
     '''
     NOTE: Have to call alg.fit() for this to work, this is what we're returning:
@@ -57,8 +96,8 @@ def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train):
      alg.bi is the numpy array of item biases
     '''
     
-    #print('pu array:', alg.pu) 
-    #print('qi array:', alg.qi)
+    print('pu array:', alg.pu) 
+    print('qi array:', alg.qi)
 
 
     return alg.pu, alg.qi, alg.bu, alg.bi, errorTrain, errorTest
