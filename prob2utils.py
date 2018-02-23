@@ -35,6 +35,10 @@ def get_err(U, V, Y, reg=0.0):
     estimating Y_{ij} as the dot product of the ith row of U and the jth column of V^T.
     """
     
+    #print('U[1]', U[1])
+    #print('V.T[:,1]', V.T[:,1])
+    #print('product', U[1] * V.T[:,1])
+    
     reg_term = 0.5 * reg * (np.sum(np.array(U) ** 2) + np.sum(np.array(V) ** 2))
     err_term = 0.5 * np.sum((Yij - np.asscalar(U[i-1] * V.T[:, j-1])) ** 2 
         for i, j, Yij in Y)

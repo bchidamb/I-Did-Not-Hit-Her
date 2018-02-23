@@ -7,6 +7,8 @@ import prob2utils as model_1
 import prob2utils_withbias as model_2
 import surpriseimpl1 as model_3
 from process_data import *
+import scipySVD as model_4
+from basic_viz import load_data
 
 # Tasks:
 #  - implement the 3 models 
@@ -68,7 +70,7 @@ def visualize(V_proj, movies_to_plot, dscr, filename=None, save=False):
     if save:
         plt.savefig(os.path.join('plots', filename + '.png'))
     else:
-        plt.show(block=False)
+        plt.show()
     
 
 if __name__ == "__main__":
@@ -88,6 +90,8 @@ if __name__ == "__main__":
     M = max(max(Y_train[:,0]), max(Y_test[:,0])).astype(int) # users
     N = max(max(Y_train[:,1]), max(Y_test[:,1])).astype(int) # movies
     
+    print('M', M, 'N', N)
+
     # Train model 1: baseline model from set 5
     k = 20
     # TODO: optimize these parameters, as well as 'eps'
@@ -133,24 +137,18 @@ if __name__ == "__main__":
     # a certain way. Can update later to pass in the raw pandas dataframes, this works though
     U_3, V_3, a_3, b_3, e_in_3, e_out_3 = model_3.train_model('./data/train.txt', '.data/test.txt', k, eta, reg, Y_train)
 
-    #e_out_3 = -1
     print("model 3 results: e_in = %.3f, e_out = %.3f" % (e_in_3, e_out_3))
     
     # Transform model 3 to 2D
     U_proj_3, V_proj_3 = project_to_2D(U_3, V_3)
     
-    # Plot model 2
+    # Plot model 3
     for ids, category in to_plot:
         visualize(V_proj_3, ids, 'Model 3: ' + category)
 
     # add needing an input at the end so program doesn't close so fast
     input('please end me')
-
-    
-
-
-
-
+    print('goodbye!')
 
 
 
