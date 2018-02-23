@@ -1,11 +1,13 @@
 from surprise import SVD
-from surprise import Dataset # pretty sure we don't need
+from surprise import Dataset 
 from surprise import Reader
 from surprise import accuracy
+from surprise import NormalPredictor
 from surprise.model_selection import train_test_split
 from surprise.model_selection import cross_validate
 from surprise.model_selection import PredefinedKFold
 from surprise.model_selection import KFold
+from surprise.model_selection import RepeatedKFold
 from basic_viz import load_data
 import numpy as np
 import os
@@ -28,13 +30,23 @@ def get_err(U, V, a, b, Y, reg=0.0):
 
 # Train the reccomender model using Suprise's SVD and return the matrices 
 # U and V in the SVD along with the errors and the biases
+
+# NOTE: For some reason the way that surprise works is such that if there is
+# a rating for a movie, then that movie is counted as a movie, thus we get
+# that we get missing movies, unless we train on both the train and test data
+# because then we get a rating for all of the movies. This seems kinda sketchy
+# but it was the only way to get the package to produce the matrices with the
+# right dimensions: U = MxK, V = KxN
+
 def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train, Y_test):
     print('Surprise! V.3')
 
-    # Get the training and testing data from the file
     # NOTE: Had to concatenate both files because if we didn't we would get
     # that surprise would  not recognize that there's N movies, because not all
     # movies are rated in the train set
+
+    # Get the training and testing data from the file, trainTest1.txt is the
+    # concatenation of train.txt and test.txt
     file_pathTrain = os.path.expanduser('./data/trainTest1.txt')
     reader = Reader(sep='\t')
     dataLocal = Dataset.load_from_file(file_pathTrain, reader=reader)
@@ -47,11 +59,25 @@ def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train, Y_test):
     alg.lr_all = eta # set the learning rate
     alg.reg_all = reg # the reglarization constant
 
+    # Know this works, training on all of the data at once, both train & test 
     trainset = dataLocal.build_full_trainset() # use all data to train
     alg.fit(trainset) # train on the trainset
     testset = trainset.build_testset()
     prediction = alg.test(testset)
     acc = accuracy.rmse(prediction, verbose=True)
+
+
+    # Cross validation doesn't work, always leaves out a movie rating we're
+    # guessing. 
+    # doesn't work!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # cross validation does not work here at all
+    #kf = KFold(n_splits=50) 
+    #
+    #for trainset1, testset in kf.split(dataLocal):
+    #    alg.fit(trainset1)
+    #    predictions = alg.test(testset)
+    #    accuracy.rmse(predictions, verbose=True)
+
 
     '''
     NOTE: Have to call alg.fit() for this to work, this is what we're returning:
@@ -64,13 +90,13 @@ def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train, Y_test):
     U = np.asmatrix(alg.pu) # convert to numpy matrices for error function
     V = np.asmatrix(alg.qi)
 
-    # Sanity checks:
-    #print('number of users:', trainset.n_users, 'M:', M)
-    #print('number of movies:', trainset.n_items, 'N:', N)
+    # Sanity checks to make sure our returned U and V matrices have right 
+    # dimensions:
+    #print('number of users:', trainset.n_users)
+    #print('number of movies:', trainset.n_items)
     #print('number of ratings:', trainset.n_ratings)
-
-    #print('U shape, MxK', U.shape)
-    #print('V shape, KxN', V.shape)
+    print('U shape, MxK', U.shape)
+    print('V shape, NxK', V.shape)
     
     # Get the training and test error using the same error function we used
     # with our other models

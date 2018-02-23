@@ -146,10 +146,17 @@ if __name__ == "__main__":
     for ids, category in to_plot:
         visualize(V_proj_3, ids, 'Model 3: ' + category)
 
-    # add needing an input at the end so program doesn't close so fast
-    input('please end me')
-    print('goodbye!')
+    U_4, V_4, e_in_4 = model_4.train_model(M, N, k, eta, reg, Y_train)
+    e_out_4 = model_4.get_err(U_4, V_4, Y_test, reg)
 
+    print("model 4 results: e_in = %.3f, e_out = %.3f" % (e_in_4, e_out_4))
+
+    # Transform model 4 to 2D
+    U_proj_4, V_proj_4 = project_to_2D(U_4, V_4)
+    
+    # Plot model 4
+    for ids, category in to_plot:
+        visualize(V_proj_4, ids, 'Model 4: ' + category)
 
 
 
