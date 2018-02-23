@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import prob2utils as model_1
 import prob2utils_withbias as model_2
-import surpriseimpl1 as model_3
+import surpriseimpl3 as model_3
 from process_data import *
 import scipySVD as model_4
 from basic_viz import load_data
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     # Note that surprise needs to be passed the data paths since it wants to use the data in
     # a certain way. Can update later to pass in the raw pandas dataframes, this works though
-    U_3, V_3, a_3, b_3, e_in_3, e_out_3 = model_3.train_model('./data/train.txt', '.data/test.txt', k, eta, reg, Y_train)
+    U_3, V_3, a_3, b_3, e_in_3, e_out_3 = model_3.train_model('./data/train.txt', '.data/test.txt', k, eta, reg, Y_train, Y_test)
 
     print("model 3 results: e_in = %.3f, e_out = %.3f" % (e_in_3, e_out_3))
     

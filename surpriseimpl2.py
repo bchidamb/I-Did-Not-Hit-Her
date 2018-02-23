@@ -28,17 +28,16 @@ def get_err(U, V, a, b, Y, reg=0.0):
 
 # Train the reccomender model using Suprise's SVD and return the matrices 
 # U and V in the SVD along with the errors and the biases
-def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train):
+def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train, Y_test):
+    print('Surprise! V.2')
 
-    # Get the training data from the file
+    # Get the training and testing data from the file
+    # NOTE: Had to concatenate both files because if we didn't we would get
+    # that surprise would  not recognize that there's N movies, because not all
+    # movies are rated in the train set
     file_pathTrain = os.path.expanduser('./data/trainTest1.txt')
     reader = Reader(sep='\t')
     dataLocal = Dataset.load_from_file(file_pathTrain, reader=reader)
-    
-    # Get the testing data from the file
-#    file_pathTest = os.path.expanduser(testFilePath) #'./data/train.txt')
-#    reader = Reader(sep='\t')
-#    dataLocalTest = Dataset.load_from_file(file_pathTrain, reader=reader)
     
     alg = SVD() # using the SVD algorithm
     
@@ -47,23 +46,12 @@ def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train):
     alg.lr_all = eta # set the learning rate
     alg.reg_all = reg # the reglarization constant
 
-    # define a cross-validation iterator 
-    #kf = KFold(n_splits=5)
-
-    #for trainset, testset in kf.split(dataLocal):
-    #    # train and test algorithm
-    #    alg.fit(trainset)
-    #    predictions = alg.test(testset)
-
     trainset = dataLocal.build_full_trainset()
     alg.fit(trainset)
 
-
-    #trainset = dataLocalTrain.build_full_trainset()
-    #alg.fit(trainset)
-    #print('number of users:', trainset.n_users)
-    #print('number of movies:', trainset.n_items)
-    #print('number of ratings:', trainset.n_ratings)
+    print('number of users:', trainset.n_users)
+    print('number of movies:', trainset.n_items)
+    print('number of ratings:', trainset.n_ratings)
 
     #testset = trainset.build_testset()
     #predictionsTrain = alg.test(testset) # testing on data in
@@ -81,7 +69,7 @@ def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train):
     print('V shape', V.shape)
     
     errorTrain = get_err(U, V, alg.bu, alg.bi, Y_train, reg)
-    errorTest = -1
+    errorTest = get_err(U, V, alg.bu, alg.bi, Y_test, reg)
 
     # to make a test test for the testing data, we need to go through a convoluted
     # process of making it first a .build_full_trainset() -> .build_testset()
@@ -104,11 +92,4 @@ def train_model(trainFilePath, testFilePath, K, eta, reg, Y_train):
 
 
     return alg.pu, alg.qi, alg.bu, alg.bi, errorTrain, errorTest
-
-
-    #trainset, testset = train_test_split(dataLocalTrain, test_size=.1)
-    #result = cross_validate(alg, dataLocalTrain, measures=['RMSE', 'MAE'], cv=5, verbose=True)
-    #rmse = sum(result['test_rmse'])/len(result['test_rmse'])
-    #print('result[test_rmse] average', rmse)    
-    #cross_validate(alg, dataLocalTrain, measures=['RMSE', 'MAE'], cv=5, verbose=True)
 
