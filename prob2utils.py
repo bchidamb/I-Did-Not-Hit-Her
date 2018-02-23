@@ -41,7 +41,7 @@ def get_err(U, V, Y, reg=0.0):
     return (reg_term + err_term) / len(Y)
 
 
-def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
+def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=2):
     """
     Given a training data matrix Y containing rows (i, j, Y_ij)
     where Y_ij is user i's rating on movie j, learns an

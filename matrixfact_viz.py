@@ -6,7 +6,7 @@ import os
 import prob2utils as model_1
 import prob2utils_withbias as model_2
 import surpriseimpl1 as model_3
-from basic_viz import load_data
+from process_data import *
 
 # Tasks:
 #  - implement the 3 models 
@@ -44,8 +44,9 @@ def project_to_2D(U, V):
 #   - dscr : title of plot
 #   - filename : if save is True, plot will be saved as plots/filename.png
 #   - save : if False, plot will pop-up but not be saved
-_, movies = load_data()
 def visualize(V_proj, movies_to_plot, dscr, filename=None, save=False):
+
+    plt.figure()
     
     # normalize data
     movie_arr = np.array(V_proj)
@@ -72,6 +73,15 @@ def visualize(V_proj, movies_to_plot, dscr, filename=None, save=False):
 
 if __name__ == "__main__":
 
+    to_plot = [
+        ([96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], 'Ten Selected Movies'),
+        (popular_movie_ids, 'Most Popular'),
+        (highest_rated_movie_ids, 'Highest Rated'),
+        (g_ids[0][:10], 'Action'),
+        (g_ids[1][:10], 'Horror'),
+        (g_ids[2][:10], 'Childrens')
+    ]
+
     Y_train = np.loadtxt('data/train.txt').astype(int)
     Y_test = np.loadtxt('data/test.txt').astype(int)
     
@@ -94,11 +104,8 @@ if __name__ == "__main__":
     U_proj_1, V_proj_1 = project_to_2D(U_1, V_1)
     
     # Plot model 1
-    visualize(
-        V_proj_1, 
-        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Model 1: Ten Selected Movies'
-    )
+    for ids, category in to_plot:
+        visualize(V_proj_1, ids, 'Model 1: ' + category)
     
     # Train model 2: baseline model with bias terms
     k = 20
@@ -116,11 +123,8 @@ if __name__ == "__main__":
     U_proj_2, V_proj_2 = project_to_2D(U_2, V_2)
     
     # Plot model 2
-    visualize(
-        V_proj_2, 
-        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Model 2: Ten Selected Movies'
-    )
+    for ids, category in to_plot:
+        visualize(V_proj_2, ids, 'Model 2: ' + category)
     
     # TODO: get error out
     print("Training model 3 with M = %s, N = %s, k = %s, eta = %s, reg = %s"%(M, N, k, eta, reg))
@@ -135,12 +139,9 @@ if __name__ == "__main__":
     # Transform model 3 to 2D
     U_proj_3, V_proj_3 = project_to_2D(U_3, V_3)
     
-    # Plot model 3
-    visualize(
-        V_proj_3, 
-        [96, 135, 182, 195, 250, 318, 237, 1095, 257, 288], # mess around with this
-        'Model 3: Ten Selected Movies'
-    )
+    # Plot model 2
+    for ids, category in to_plot:
+        visualize(V_proj_3, ids, 'Model 3: ' + category)
 
     # add needing an input at the end so program doesn't close so fast
     input('please end me')
