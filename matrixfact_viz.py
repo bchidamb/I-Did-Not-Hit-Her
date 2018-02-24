@@ -110,6 +110,8 @@ if __name__ == "__main__":
     # Plot model 1
     for ids, category in to_plot:
         visualize(V_proj_1, ids, 'Model 1: ' + category)
+        # Example for saving plot:
+        # visualize(V_proj_1, ids, 'Model 1: ' + category, filename=os.path.join('model1', category), save=True)
     
     # Train model 2: baseline model with bias terms
     k = 20
