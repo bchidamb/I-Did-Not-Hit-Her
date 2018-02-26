@@ -2,4 +2,7 @@
 _The Best and Worst of Hollywood_
 
 CS 155 Miniproject 2: MovieLens Visualization  
-Bhairav Chidambaram, Marcus Dominguez-Kuhne, Connor Soohoo
+Bhairav Chidambaram, Marcus Dominguez-Kuhne, Connor Soohoo  
+
+Report link:
+https://www.overleaf.com/14028730mpzssvchzqsp
